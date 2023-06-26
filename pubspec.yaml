@@ -1,7 +1,7 @@
 name: response_wrapper
-description: Help to hit dio call.
-version: 0.0.1
-homepage:
+description: "The response_wrapper package offers a convenient way to handle HTTP requests and responses in Flutter applications. It includes a DioService class that encapsulates common HTTP methods such as GET, POST, PUT, and DELETE. The package simplifies the process of making API calls and handling responses, providing a clean and organized approach. It presents a simple UI with a centered text field to display the API response. "
+version: 0.0.2
+homepage: https://github.com/officialsukh728/response_wrapper
 
 environment:
   sdk: '>=2.19.6 <4.0.0'
@@ -10,8 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dio: 4.0.6
-  plugin_platform_interface: ^2.0.2
+  dio: ^5.2.1+1
   get_it: ^7.6.0
 
 dev_dependencies:
@@ -25,5 +24,19 @@ flutter:
       android:
         package: com.example.response_wrapper
         pluginClass: ResponseWrapperPlugin
+        fileName: response_wrapper_plugin
       ios:
         pluginClass: ResponseWrapperPlugin
+        fileName: ResponseWrapperPlugin
+      web:
+        pluginClass: ResponseWrapperPlugin
+        fileName: response_wrapper_plugin
+      windows:
+        pluginClass: ResponseWrapperPlugin
+        fileName: response_wrapper_plugin
+      linux:
+        pluginClass: ResponseWrapperPlugin
+        fileName: response_wrapper_plugin
+      macos:
+        pluginClass: ResponseWrapperPlugin
+        fileName: response_wrapper_plugin

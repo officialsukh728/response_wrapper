@@ -2,7 +2,7 @@ part of 'response_wrapper.dart';
 
 typedef AppRunner = FutureOr<void> Function();
 
-class HttpInjector {
+class ResponseHttpInjector {
   static Future<void> init({
     required AppRunner appRunner,
   }) async {

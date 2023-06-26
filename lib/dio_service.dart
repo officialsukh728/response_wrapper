@@ -1,10 +1,11 @@
 part of 'response_wrapper.dart';
 
-abstract class DioServiceConst {
-  static const int post = 0;
-  static const int get = 1;
-  static const int delete = 2;
-  static const int put = 3;
+enum DioServiceConst {
+  get,
+  post,
+  delete,
+  put,
+  patch,
 }
 
 class DioService {
@@ -16,7 +17,7 @@ class DioService {
 
   Future<Response> request({
     required String url,
-    int requestType = DioServiceConst.get,
+    DioServiceConst requestType = DioServiceConst.get,
     Map<String, dynamic>? body,
     Map<String, String>? customHeaders,
   }) async {
@@ -24,7 +25,7 @@ class DioService {
     try {
       Map<String, dynamic> map = body ?? {};
       Map<String, String> headers = customHeaders ?? getHeaders();
-      String fullUrl =  url;
+      String fullUrl = url;
       printLog("Hit Api Url 😛 ==> $fullUrl");
       printLog("Hit Api Body 😛 ==> $map");
       printLog("Api Headers ==> $headers");
@@ -35,7 +36,7 @@ class DioService {
         headers: headers,
       );
       printLog("Dio Response : $url ${response.data}");
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       blocLog(bloc: "Error message for", msg: "$url: ${e.message}");
       blocLog(bloc: "Error response for $url ", msg: "${e.response?.data}");
       blocLog(bloc: "Error Status Code ", msg: "${e.response?.statusCode}");
@@ -46,7 +47,7 @@ class DioService {
 
   Future<Response> _checkRequest({
     required String fullUrl,
-    required int requestType,
+    required DioServiceConst requestType,
     required Map<String, dynamic> body,
     required Map<String, dynamic> headers,
   }) async {
@@ -61,13 +62,17 @@ class DioService {
       printLog("Hit Request Type 😛 ==> post");
       return await _dio.post(fullUrl,
           data: body, options: Options(headers: headers));
+    }  else if (requestType == DioServiceConst.patch) {
+      printLog("Hit Request Type 😛 ==> post");
+      return await _dio.patch(fullUrl,
+          data: body, options: Options(headers: headers));
     } else if (requestType == DioServiceConst.delete) {
       printLog("Hit Request Type 😛 ==> delete");
       return await _dio.delete(fullUrl,
           data: body, options: Options(headers: headers));
     } else {
-      printLog("Hit Request Type 😛 ==> patch");
-      return await _dio.patch(fullUrl,
+      printLog("Hit Request Type 😛 ==> put");
+      return await _dio.put(fullUrl,
           data: body, options: Options(headers: headers));
     }
   }
@@ -79,12 +84,12 @@ class DioService {
     return headers;
   }
 
-  dynamic throwException(DioError e, {String? url}) {
+  dynamic throwException(DioException e, {String? url}) {
     if (e.response?.statusCode ==
         RepoResponseStatus.serverIsTemporarilyUnable) {
       throw AuthenticationException(
           "The server is temporarily unable to service.");
-    } else if (e.type == DioErrorType.connectTimeout) {
+    } else if (e.type == DioExceptionType.connectionError) {
       throw ConnectingTimedOut("Connecting timed out please try again latter ");
     } else if (e.response != null &&
         (e.response?.statusCode == RepoResponseStatus.authentication)) {
@@ -93,10 +98,10 @@ class DioService {
         (e.response?.statusCode == RepoResponseStatus.platformException ||
             e.response?.statusCode == RepoResponseStatus.notFoundException)) {
       throw PlatformException(
-        details: e.response?.data['message'].toString(),
-        message: e.response?.data['message'].toString(),
+        details: e.response?.data.toString(),
+        message: e.response?.data.toString(),
         code: "${e.response?.statusCode.toString()}",
-        stacktrace: "",
+        stacktrace: "stacktrace",
       );
     } else {
       throw Exception(e.message);
